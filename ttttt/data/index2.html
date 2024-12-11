@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Dashboard</title>
+    <link rel="stylesheet" href="style2.css">
+    <script src="scripts2.js" defer></script>
+</head>
+<body>
+    <!-- Title Section -->
+    <header class="title-container">
+        <h1>YOLO UNO WEB SERVER</h1>
+    </header>
+
+    <div class="dashboard">
+        <!-- Row 1 -->
+        <div class="card">
+            <div id="moistureCircle" class="circle">
+                <span id="moistureValue" class="value">0</span>
+            </div>
+            <h3>Moisture</h3>
+        </div>
+        <div class="card">
+            <div id="temperatureCircle" class="circle">
+                <span id="temperatureValue" class="value">0</span>
+            </div>
+            <h3>Temperature</h3>
+        </div>
+        <div class="card">
+            <div id="luminosityCircle" class="circle">
+                <span id="luminosityValue" class="value">0</span>
+            </div>
+            <h3>Luminosity</h3>
+        </div>
+        <!-- Row 2 -->
+        <div class="card">
+            <div id="humidityCircle" class="circle">
+                <span id="humidityValue" class="value">0</span>
+            </div>
+            <h3>Humidity</h3>
+        </div>
+        <div class="card">
+            <div id="distanceCircle" class="circle">
+                <span id="distanceValue" class="value">0</span>
+            </div>
+            <h3>Distance</h3>
+        </div>
+    </div>
+
+    <div class="button-container">
+        <button class="btn" onclick="toggleLED()">Toggle LED</button>
+        <!--Image light bulb-->
+        <img id="lightbulbImage" src="images/off.png" alt="Lightbulb">
+    </div>
+</body>
+</html>
