@@ -8,13 +8,12 @@
 // #include <Adafruit_NeoPixel.h>
 // #include <DHT20.h>
 // #include <LiquidCrystal_I2C.h>
-// #include <Ultrasonic.h>
-// #include <Wire.h>
 
 // /// package for connect to sever and mqtt
 // #include <WiFi.h>
 // #include "Adafruit_MQTT.h"
 // #include "Adafruit_MQTT_Client.h"
+// #include <Ultrasonic.h>
 
 // // Define pins
 
@@ -28,18 +27,19 @@
 // #define AIO_KEY "ẻ iogerio"
 
 // WiFiClient client;
-// Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_USERNAME);
+// Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_USERNAME, AIO_KEY);
+// // Adafruit_MQTT_Client mqtt(&client, AIO_SERVER, AIO_SERVERPORT, AIO_USERNAME, AIO_USERNAME, AIO_KEY);
 
 // /****************************** Feeds ***************************************/
 // // send signal temperature to sever
-// Adafruit_MQTT_Publish temperature = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V2");
-// Adafruit_MQTT_Publish luminosity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V3");
-// Adafruit_MQTT_Publish humidity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V1");
+// Adafruit_MQTT_Publish temperature = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V1");
+// Adafruit_MQTT_Publish luminosity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V2");
+// Adafruit_MQTT_Publish humidity = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V3");
 // Adafruit_MQTT_Publish moisture = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V4");
-// Adafruit_MQTT_Publish distance = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V6");
+// Adafruit_MQTT_Publish fan = Adafruit_MQTT_Publish(&mqtt, AIO_USERNAME "/feeds/V5");
 
 // //get the signal from sever 
-// Adafruit_MQTT_Subscribe toggle = Adafruit_MQTT_Subscribe(&mqtt, AIO_USERNAME "/feeds/V5", MQTT_QOS_1);
+// Adafruit_MQTT_Subscribe toggle = Adafruit_MQTT_Subscribe(&mqtt, AIO_USERNAME "/feeds/V6", MQTT_QOS_1);
 
 // #if CONFIG_FREERTOS_UNICORE
 // #define ARDUINO_RUNNING_CORE 0
@@ -53,6 +53,7 @@
 
 // static uint32_t light = 0;
 // static uint32_t toggleValue = 0;
+// static int distance = 357;
 // void readToggle(uint32_t value)
 // {
 //   toggleValue = value;
@@ -110,7 +111,7 @@
 // Adafruit_NeoPixel pixels5(4, GPIO_NUM_8, NEO_GRB + NEO_KHZ800);
 // DHT20 dht20;
 // LiquidCrystal_I2C lcd(33,16,2);
-// Ultrasonic ultrasonic(GPIO_NUM_3, GPIO_NUM_4);
+// Ultrasonic ultrasonic(GPIO_NUM_18, GPIO_NUM_21);
 
 // // The setup function runs once when you press reset or power on the board.
 // void setup() {
@@ -126,6 +127,7 @@
 //   }
 
 //   Wire.begin(GPIO_NUM_11, GPIO_NUM_12);
+
 //   dht20.begin();
 //   lcd.begin();
 //   pixels3.begin();
@@ -134,9 +136,9 @@
 //   xTaskCreate(TaskTemperatureHumidity, "Task Temperature",2048, NULL, 2, NULL);
 //   xTaskCreate(TaskSoilMoistureAndRelay, "Task Soil Moisture",2048, NULL, 2, NULL);
 //   xTaskCreate(TaskLightAndLED, "Task Light LED",2048, NULL, 2, NULL);
-//   // xTaskCreate(TaskTurnOnLED, "Task Turn On LED",2048, NULL, 2, NULL);
+//   xTaskCreate(TaskDisAndFan, "Distance and fan", 2048, NULL, 2, NULL);
 
-//   xTaskCreate(TaskDisAndFan, "Task Dis and Fan", 2048, NULL, 2, NULL);
+//   // xTaskCreate(TaskTurnOnLED, "Task Turn On LED",2048, NULL, 2, NULL);
 
 //   Serial.printf("Basic Multi Threading Arduino Example\n");
 //   // Now the task scheduler, which takes over control of scheduling individual tasks, is automatically started.
@@ -156,17 +158,27 @@
 // /*--------------------------------------------------*/
 // /*---------------------- Tasks ---------------------*/
 // /*--------------------------------------------------*/
+
+// void TaskDisAndFan(void *pvParameters)
+// {
+//   pinMode(GPIO_NUM_10, OUTPUT);
+//   uint32_t distance = 0;
+//   while(1)
+//   {
+//     Serial.print("Distance value: ");
+//     distance = ultrasonic.read();
+//     fan.publish(distance);
+//     Serial.println(distance);
+//     analogWrite(GPIO_NUM_10, distance > 5 ? 0 : 100);
+//     vTaskDelay(2000);
+    
+//   }
+// }
+
 // void TaskBlink(void *pvParameters) {
 //   pinMode(GPIO_NUM_48, OUTPUT);
 //   while (1) { 
 //     mqtt.subscribe(&toggle);
-
-//     if (toggleValue == 1) {
-//       digitalWrite(GPIO_NUM_48, HIGH);
-//     } else {
-//       digitalWrite(GPIO_NUM_48, LOW);
-//     }
-
 //     vTaskDelay(500); // Add delay to prevent busy waiting
 //   }
 // }
@@ -288,25 +300,8 @@
 //   }
 // }
 
-// void TaskDisAndFan(void *pvParameters)
-// {
-//   pinMode(GPIO_NUM_10, OUTPUT);
-//   while(1)
-//   {
-//     Serial.print("Distance value: ");
-//     Serial.println(ultrasonic.read());
-//     distance.publish(ultrasonic.read());
+/*******************************************************************************************************/
 
-//     int distance_value = ultrasonic.read();
-
-//     analogWrite(GPIO_NUM_10, distance_value > 5 ? 0 : 100);
-//     vTaskDelay(500);
-    
-//   }
-// }
-
-
-// /*******************************************************************************************************/
 
 #include <WiFi.h>
 #include <ESPAsyncWebServer.h>
